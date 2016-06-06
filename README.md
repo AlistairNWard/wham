@@ -21,14 +21,14 @@ http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004572
 
 ###Installing whamg
 
-Whamg depends on CMAKE and OPENMP.  These dependances are commonly found preinstalled on linux systems. 
+Whamg depends on CMAKE and OPENMP.  These dependancies are commonly found preinstalled on linux systems. 
 ```
 git clone --recursive  https://github.com/zeeev/wham.git ; cd wham ; git checkout devel ; make 
 ```
 
 ###Running whamg
 
-Whamg uses paired alignments generated with bwa-mem.  Whamg uses the same bams as SNV and INDEL calling tools.  Duplicates should be marked or removed, and indel realignment is helpful.  Whamg is agnostic regarding the bwa-mem –M flag (if you don’t know what that means don’t worry).  **It is important that the –R flag in bwa mem is used.  Whamg requires read group information. Currently, Whamg assumes one library per bam file.**
+Whamg uses paired alignments generated with bwa-mem.  Whamg uses the same bams as SNV and INDEL calling tools.  Duplicates should be marked or removed, and indel realignment is helpful.  Whamg is agnostic regarding the bwa-mem –M flag (if you don’t know what that means, don’t worry).  **It is important that the –R flag in bwa-mem is used.  Whamg requires read group information. Currently, Whamg assumes one library per bam file.**
 
 
 ####Example 
@@ -53,7 +53,7 @@ In the example above we are telling whamg to only use two CPUs.
 whamg  -g graph.txt -x 2 -e $EXCLUDE -a Homo_sapiens_assembly19.fasta –f CHM1_1.bam > chm1.vcf  2> chm1.err
 ```
 
-In the example above each putative structural variant will be written to a flat text file.  Individual graphs can be visualized with dotviz or gephi.  This output can be helpful for interrogating missing calls or complex structural variants.  Do not use this option on a genome-wide run.
+In the example above each putative structural variant will be written to a flat text file (graph.txt).  Individual graphs can be visualized with dotviz or gephi.  This output can be helpful for interrogating missing calls or complex structural variants.  Do not use this option on a genome-wide run.
 
 
 ### Explanation of options 
@@ -62,7 +62,8 @@ In the example above each putative structural variant will be written to a flat 
 NA12878.sort.bam
 NA12776.sort.bam
 ```
-**-a**: The matched reference genome.  It is important that the bams were aligned to the same reference sequence.
+**-a**: The matched reference genome.  It is important that the bams were aligned to the same reference sequence.  
+
 **-s**: whamg will exit after collecting the basic statistics:
 ```
 INFO: for Sample:CHM1
@@ -85,7 +86,7 @@ INFO: for Sample:CHM1
 
 **-r**: Region in format: seqid:start-end.
 
-**-x**: The number of CPUs wham will attempt to use.  During the first step whamg reads the entire bam file.  If you notice CPU usage dropping IO might be swamping out.  After the bam files are read there are several 1CPU steps before whamg finishes. The right number of CPUs  to use really depends on IO speeds.
+**-x**: The number of CPUs whamg will attempt to use.  During the first step whamg reads the entire bam file.  If you notice CPU usage dropping IO might be swamping out.  After the bam files are read there are several 1CPU steps before whamg finishes. The right number of CPUs  to use really depends on IO speeds.
 
 **-i**:  Whamg uses the bwa-mem SA tag (default).   Older versions of bwa-mem used a different tag: XP.
 
@@ -118,7 +119,7 @@ In this section each INFO and FORMAT field will be covered. Here is an example w
 ##INFO=<ID=T,Number=1,Type=Integer,Description="Number of reads supporting a BND">
 ##INFO=<ID=TAGS,Number=.,Type=Integer,Description="SM tags with breakpoint support">
 ##INFO=<ID=TF,Number=1,Type=Integer,Description="Number of reads mapped too far">
-##INFO=<ID=U,Number=1,Type=Integer,Description="Number of reads supporting a duplication">
+##INFO=<ID=U,Number=1,Type=Integer,Description="Number of reads supporting an inversion">
 ##INFO=<ID=V,Number=1,Type=Integer,Description="Number of reads supporting an inversion">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
@@ -136,7 +137,7 @@ This field is fixed at -10,10.  Most whamg calls are accurate to within a couple
 
 #### CF
 
-Larger SVs (greater than average insert size of the library) generate mate pair patterns.  For example,  The mates of reads overlapping the 5’ of a deletion should map downstream of the 3’ breakpoint.  Each SV class generates a different pattern.  CF is the fraction of the reads in the graph structure that cluster according to SVTYPE.
+Larger SVs (greater than average insert size of the library) generate mate pair patterns.  For example,  the mates of reads overlapping the 5’ end of a deletion should map downstream of the 3’ breakpoint.  Each SV class generates a different pattern.  CF is the fraction of the reads in the graph structure that cluster according to SVTYPE.
 
 #### CW
 
@@ -161,7 +162,7 @@ The number of everted mate pairs ← →
 
 #### I  
 
-The number of reads supporting and inversion
+The number of reads supporting an inversion
 
 #### SR
 
@@ -182,24 +183,24 @@ This is a standard VCF field.
 
 #### T
 
-The number of reads supporting and interchomosmal event. 
+The number of reads supporting an interchomosmal event. 
 
 
 #### TAGS
 
-Which individuals (SMs) that are in the graph.
+The individuals (SMs) that are in the graph.
 
 #### TF
 
-The number of mate pairs that map too far away
+The number of mate pairs whose mapping are discordant with the fragment length.
 
 #### U
 
-The number of reads that support duplication
+The number of reads that support a duplication.
 
 #### V
 
-The number of reads that support an inversion
+The number of reads that support an inversion.
 
 #### GT
 
